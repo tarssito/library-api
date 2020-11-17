@@ -46,7 +46,7 @@ public class BookControllerTest {
                 .isbn("123123")
                 .build();
         Book savedBook = Book.builder()
-                .id(10l)
+                .id(10L)
                 .title("Meu Livro")
                 .author("Autor")
                 .isbn("123123")
