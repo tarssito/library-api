@@ -2,6 +2,7 @@ package com.tarssito.libraryapi.api.controller;
 
 import com.tarssito.libraryapi.api.dto.BookDTO;
 import com.tarssito.libraryapi.api.exception.ApiErrors;
+import com.tarssito.libraryapi.exception.BusinessException;
 import com.tarssito.libraryapi.model.entity.Book;
 import com.tarssito.libraryapi.service.BookService;
 import org.modelmapper.ModelMapper;
@@ -38,5 +39,11 @@ public class BookController {
     public ApiErrors handleValidationExceptions(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         return new ApiErrors(bindingResult);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handleBusinessException(BusinessException ex) {
+        return new ApiErrors(ex);
     }
 }
