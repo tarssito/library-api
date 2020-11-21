@@ -1,9 +1,11 @@
 package com.tarssito.libraryapi.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tarssito.libraryapi.api.dto.BookDTO;
 import com.tarssito.libraryapi.model.entity.Book;
 import com.tarssito.libraryapi.service.BookService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +23,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
+import java.util.regex.Matcher;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -73,7 +78,16 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("Deve lançar erro de exceção quando não houver dados suficientes para criação do livro")
-    public void createInvalidBookTest() {
-
+    public void createInvalidBookTest() throws Exception {
+        String json = new ObjectMapper().writeValueAsString(new BookDTO());
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+        mockMvc
+                .perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", hasSize(3)));
     }
 }
