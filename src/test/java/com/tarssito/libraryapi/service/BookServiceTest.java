@@ -100,6 +100,56 @@ public class BookServiceTest {
         assertThat(optionalBook.isPresent()).isFalse();
     }
 
+    @Test
+    @DisplayName("Deve lançar uma exceção ao tentar atualizar um livro sem ID")
+    public void shouldNotUpdateBookWithoutID() {
+        Book book = createValidBook();
+
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> bookService.update(book));
+
+        Mockito.verify(repository, Mockito.never()).save(book);
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um livro")
+    public void updateBookTest() {
+        Book book = createValidBook();
+        book.setId(123L);
+        book.setAuthor("Ciclano");
+        Mockito.when(repository.save(book))
+                .thenReturn(Book.builder()
+                        .id(123L)
+                        .isbn("123")
+                        .author("Ciclano")
+                        .title("As Aventuras")
+                        .build())
+        ;
+        Book savedBook = bookService.update(book);
+
+        assertThat(savedBook.getId()).isNotNull();
+        assertThat(savedBook.getIsbn()).isEqualTo("123");
+        assertThat(savedBook.getAuthor()).isEqualTo("Ciclano");
+        assertThat(savedBook.getTitle()).isEqualTo("As Aventuras");
+    }
+
+    @Test
+    @DisplayName("Deve lançar uma exceção ao tentar deletar um livro sem ID")
+    public void shouldNotDeleteBookWithoutID() {
+        Book book = new Book();
+
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> bookService.delete(book));
+
+        Mockito.verify(repository, Mockito.never()).delete(book);
+    }
+
+    @Test
+    @DisplayName("Deve deletar um livro")
+    public void deleteBookTest() {
+        Book book = Book.builder().id(321L).build();
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> bookService.save(book));
+        Mockito.verify(repository, Mockito.times(1)).delete(book);
+    }
+
     private Book createValidBook() {
         return Book.builder()
                 .isbn("123")
