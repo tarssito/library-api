@@ -9,11 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -69,17 +71,9 @@ public class LoanServiceTest {
     @Test
     @DisplayName("Deve lançar um erro de negócio ao tentar salvar um empréstimo de um livro já emprestado")
     public void loanedBookSaveTest() {
-        Book book = Book.builder()
-                .id(1L)
-                .build();
+        Loan loan = createLoanTest();
 
-        Loan loan = Loan.builder()
-                .costumer("Fulano")
-                .book(book)
-                .loanDate(LocalDate.now())
-                .build();
-
-        when(repository.existsByBookNotReturned(book)).thenReturn(true);
+        when(repository.existsByBookNotReturned(loan.getBook())).thenReturn(true);
 
         Throwable exception = catchThrowable(() -> service.save(loan));
 
@@ -88,5 +82,35 @@ public class LoanServiceTest {
                 .hasMessage("Book already loaned");
 
         verify(repository, never()).save(loan);
+    }
+
+    @Test
+    @DisplayName("Deve obter informações de um empréstimo por ID")
+    public void getLoanDetailsTest() {
+        Long id = 1L;
+        Loan loan = createLoanTest();
+        loan.setId(id);
+
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(loan));
+
+        Optional<Loan> optionalLoan = service.getById(id);
+
+        assertThat(optionalLoan.isPresent()).isTrue();
+        assertThat(optionalLoan.get().getId()).isEqualTo(id);
+        assertThat(optionalLoan.get().getCostumer()).isEqualTo(loan.getCostumer());
+        assertThat(optionalLoan.get().getBook().getId()).isEqualTo(loan.getBook().getId());
+        assertThat(optionalLoan.get().getLoanDate()).isEqualTo(loan.getLoanDate());
+    }
+
+    public Loan createLoanTest() {
+        Book book = Book.builder()
+                .id(1L)
+                .build();
+
+        return Loan.builder()
+                .costumer("Fulano")
+                .book(book)
+                .loanDate(LocalDate.now())
+                .build();
     }
 }
