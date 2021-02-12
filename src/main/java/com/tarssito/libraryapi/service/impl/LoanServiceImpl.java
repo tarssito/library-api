@@ -6,6 +6,8 @@ import com.tarssito.libraryapi.model.repository.LoanRepository;
 import com.tarssito.libraryapi.service.LoanService;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public class LoanServiceImpl implements LoanService {
 
@@ -17,5 +19,15 @@ public class LoanServiceImpl implements LoanService {
             throw new BusinessException("Book already loaned");
         }
         return loanRepository.save(loan);
+    }
+
+    @Override
+    public Optional<Loan> getById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Loan update(Loan loan) {
+        return null;
     }
 }

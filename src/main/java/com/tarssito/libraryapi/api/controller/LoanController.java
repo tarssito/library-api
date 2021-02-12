@@ -1,6 +1,7 @@
 package com.tarssito.libraryapi.api.controller;
 
 import com.tarssito.libraryapi.api.dto.LoanDTO;
+import com.tarssito.libraryapi.api.dto.ReturnedLoanDTO;
 import com.tarssito.libraryapi.model.entity.Book;
 import com.tarssito.libraryapi.model.entity.Loan;
 import com.tarssito.libraryapi.service.BookService;
@@ -33,5 +34,12 @@ public class LoanController {
                     .build();
         Loan loan = loanService.save(entity);
         return loan.getId();
+    }
+
+    @PatchMapping("{id}")
+    public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoanDTO dto) {
+        Loan loan = loanService.getById(id).get();
+        loan.setReturned(dto.getReturned());
+        loanService.update(loan);
     }
 }
