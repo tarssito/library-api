@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoanDTO {
+    private Long id;
     private String costumer;
     private String isbn;
+    private BookDTO book;
 }

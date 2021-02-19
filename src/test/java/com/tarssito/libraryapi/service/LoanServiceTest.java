@@ -102,7 +102,7 @@ public class LoanServiceTest {
         assertThat(optionalLoan.get().getLoanDate()).isEqualTo(loan.getLoanDate());
     }
 
-    public Loan createLoanTest() {
+    public static Loan createLoanTest() {
         Book book = Book.builder()
                 .id(1L)
                 .build();
