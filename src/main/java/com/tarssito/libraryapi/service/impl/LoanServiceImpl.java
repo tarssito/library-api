@@ -36,6 +36,6 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Page<Loan> find(LoanFilterDTO filterDTO, Pageable pageable) {
-        return null;
+        return loanRepository.findByBookOrCustomer(filterDTO.getIsbn(), filterDTO.getCostumer(), pageable);
     }
 }

@@ -1,5 +1,6 @@
 package com.tarssito.libraryapi.service;
 
+import com.tarssito.libraryapi.api.dto.LoanFilterDTO;
 import com.tarssito.libraryapi.exception.BusinessException;
 import com.tarssito.libraryapi.model.entity.Book;
 import com.tarssito.libraryapi.model.entity.Loan;
@@ -11,10 +12,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,6 +107,38 @@ public class LoanServiceTest {
         assertThat(optionalLoan.get().getCostumer()).isEqualTo(loan.getCostumer());
         assertThat(optionalLoan.get().getBook().getId()).isEqualTo(loan.getBook().getId());
         assertThat(optionalLoan.get().getLoanDate()).isEqualTo(loan.getLoanDate());
+    }
+
+    @Test
+    @DisplayName("Deve filtrar empréstimos pelas propriedades")
+    public void findLoanTest() {
+        // cenario
+        LoanFilterDTO loanFilterDTO = LoanFilterDTO.builder()
+                .isbn("321")
+                .costumer("Fulano")
+                .build();
+        Long id = 1L;
+        Loan loan = createLoanTest();
+        loan.setId(id);
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<Loan> loans = Collections.singletonList(loan);
+        Page<Loan> page = new PageImpl<>(loans, pageRequest, loans.size());
+
+        Mockito.when( repository.findByBookOrCustomer(
+                Mockito.anyString(),
+                Mockito.anyString(),
+                Mockito.any(PageRequest.class)
+        )).thenReturn(page);
+
+        // execução
+        Page<Loan> result = service.find(loanFilterDTO, pageRequest);
+
+        // verificação
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent()).isEqualTo(loans);
+        assertThat(result.getPageable().getPageNumber()).isZero();
+        assertThat(result.getPageable().getPageSize()).isEqualTo(10);
     }
 
     public static Loan createLoanTest() {
