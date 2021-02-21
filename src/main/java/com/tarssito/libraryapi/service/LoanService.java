@@ -1,6 +1,7 @@
 package com.tarssito.libraryapi.service;
 
 import com.tarssito.libraryapi.api.dto.LoanFilterDTO;
+import com.tarssito.libraryapi.model.entity.Book;
 import com.tarssito.libraryapi.model.entity.Loan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,6 @@ public interface LoanService {
     Loan update(Loan loan);
 
     Page<Loan> find(LoanFilterDTO filterDTO, Pageable pageable);
+
+    Page<Loan> getByBook(Book book, Pageable pageable);
 }

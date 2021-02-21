@@ -2,6 +2,7 @@ package com.tarssito.libraryapi.service.impl;
 
 import com.tarssito.libraryapi.api.dto.LoanFilterDTO;
 import com.tarssito.libraryapi.exception.BusinessException;
+import com.tarssito.libraryapi.model.entity.Book;
 import com.tarssito.libraryapi.model.entity.Loan;
 import com.tarssito.libraryapi.model.repository.LoanRepository;
 import com.tarssito.libraryapi.service.LoanService;
@@ -37,5 +38,10 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public Page<Loan> find(LoanFilterDTO filterDTO, Pageable pageable) {
         return loanRepository.findByBookOrCustomer(filterDTO.getIsbn(), filterDTO.getCostumer(), pageable);
+    }
+
+    @Override
+    public Page<Loan> getByBook(Book book, Pageable pageable) {
+        return loanRepository.findByBook(book, pageable);
     }
 }
