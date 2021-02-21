@@ -8,11 +8,12 @@ import com.tarssito.libraryapi.model.entity.Book;
 import com.tarssito.libraryapi.model.entity.Loan;
 import com.tarssito.libraryapi.service.BookService;
 import com.tarssito.libraryapi.service.LoanService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/loans")
 @RequiredArgsConstructor
+@Api("Loan API")
 public class LoanController {
 
     private final LoanService loanService;
@@ -33,6 +35,7 @@ public class LoanController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Creates a Loan")
     public Long create(@RequestBody LoanDTO dto) {
         Book book = bookService.getBookByIsbn(dto.getIsbn()).
                 orElseThrow(() ->
@@ -47,6 +50,7 @@ public class LoanController {
     }
 
     @PatchMapping("{id}")
+    @ApiOperation("Update loan return status")
     public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoanDTO dto) {
         Loan loan = loanService.getById(id).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -55,6 +59,7 @@ public class LoanController {
     }
 
     @GetMapping
+    @ApiOperation("Find Loans by params")
     public Page<LoanDTO> find(LoanFilterDTO dto, Pageable pageRequest) {
         Page<Loan> page = loanService.find(dto, pageRequest);
         List<LoanDTO> loans = page.getContent()

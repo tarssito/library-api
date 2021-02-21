@@ -153,7 +153,7 @@ public class BookServiceTest {
     @DisplayName("Deve deletar um livro")
     public void deleteBookTest() {
         Book book = Book.builder().id(321L).build();
-        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> bookService.save(book));
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> bookService.delete(book));
         Mockito.verify(repository, Mockito.times(1)).delete(book);
     }
 

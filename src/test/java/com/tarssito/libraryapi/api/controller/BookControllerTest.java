@@ -5,6 +5,7 @@ import com.tarssito.libraryapi.api.dto.BookDTO;
 import com.tarssito.libraryapi.exception.BusinessException;
 import com.tarssito.libraryapi.model.entity.Book;
 import com.tarssito.libraryapi.service.BookService;
+import com.tarssito.libraryapi.service.LoanService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +45,9 @@ public class BookControllerTest {
 
     @MockBean
     BookService bookService;
+
+    @MockBean
+    LoanService loanService;
 
     @Test
     @DisplayName("Deve criar um livro com sucesso")
