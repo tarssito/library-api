@@ -63,6 +63,7 @@ public class LoanControllerTest {
         Loan loan = Loan.builder()
                 .id(1L)
                 .costumer("Fulano")
+                .costumerEmail("costumer@teste.com")
                 .book(book)
                 .loanDate(LocalDate.now())
                 .build();

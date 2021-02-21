@@ -148,6 +148,7 @@ public class LoanServiceTest {
 
         return Loan.builder()
                 .costumer("Fulano")
+                .costumerEmail("costumer@teste.com")
                 .book(book)
                 .loanDate(LocalDate.now())
                 .build();
