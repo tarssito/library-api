@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
 @Api("Book API")
+@Slf4j
 public class BookController {
 
     private final BookService bookService;
@@ -38,6 +40,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Creates a Book")
     public BookDTO create(@RequestBody @Valid BookDTO dto) {
+        log.info("create a book, {} ", dto);
         Book entity = modelMapper.map(dto, Book.class);
         entity = bookService.save(entity);
         return modelMapper.map(entity, BookDTO.class);
@@ -46,6 +49,7 @@ public class BookController {
     @GetMapping("/{id}")
     @ApiOperation("Obtains a Book details by id")
     public BookDTO get(@PathVariable Long id) {
+        log.info("get a book by id, {} ", id);
         return bookService.getByID(id)
                 .map(book -> modelMapper.map(book, BookDTO.class))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -58,6 +62,7 @@ public class BookController {
             @ApiResponse(code = 204, message = "Book successfully deleted")
     })
     public void delete(@PathVariable Long id) {
+        log.info("delete a book by id, {} ", id);
         Book book = bookService.getByID(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND));
         bookService.delete(book);
@@ -67,6 +72,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation("Updates a Book")
     public BookDTO update(@PathVariable Long id, BookDTO dto) {
+        log.info("update book, {} ", dto);
         return bookService.getByID(id).map(book -> {
             book.setAuthor(dto.getAuthor());
             book.setTitle(dto.getTitle());
@@ -78,6 +84,7 @@ public class BookController {
     @GetMapping
     @ApiOperation("Find Books by params")
     public Page<BookDTO> find(BookDTO dto, Pageable pageRequest) {
+        log.info("find book (filter), {} ", dto);
         Book filter = modelMapper.map(dto, Book.class);
         Page<Book> result = bookService.find(filter, pageRequest);
         List<BookDTO> list = result.getContent()
@@ -92,6 +99,7 @@ public class BookController {
     public Page<LoanDTO> loansByBook(@PathVariable Long id, Pageable pageable) {
         Book book = bookService.getByID(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        log.info("loans by Book, {} ", book);
         Page<Loan> result = loanService.getByBook(book, pageable);
         List<LoanDTO> loans = result.getContent()
                 .stream()

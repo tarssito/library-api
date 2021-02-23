@@ -11,6 +11,7 @@ import com.tarssito.libraryapi.service.LoanService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @RequestMapping("api/loans")
 @RequiredArgsConstructor
 @Api("Loan API")
+@Slf4j
 public class LoanController {
 
     private final LoanService loanService;
@@ -37,6 +39,7 @@ public class LoanController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Creates a Loan")
     public Long create(@RequestBody LoanDTO dto) {
+        log.info("create a loan, {} ", dto);
         Book book = bookService.getBookByIsbn(dto.getIsbn()).
                 orElseThrow(() ->
                         new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book not found for passed isbn"));
@@ -52,6 +55,7 @@ public class LoanController {
     @PatchMapping("{id}")
     @ApiOperation("Update loan return status")
     public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoanDTO dto) {
+        log.info("Update loan return status (dto), {} ", dto);
         Loan loan = loanService.getById(id).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         loan.setReturned(dto.getReturned());
@@ -61,6 +65,7 @@ public class LoanController {
     @GetMapping
     @ApiOperation("Find Loans by params")
     public Page<LoanDTO> find(LoanFilterDTO dto, Pageable pageRequest) {
+        log.info("find loan (filter), {} ", dto);
         Page<Loan> page = loanService.find(dto, pageRequest);
         List<LoanDTO> loans = page.getContent()
                 .stream()
